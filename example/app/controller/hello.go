@@ -10,10 +10,11 @@ import (
 type HelloController struct {
 	Demo *config.Demo  `inject:""`
 	Demo1 *config.Demo `inject:"demo"`
+	Cfg *config.Configuration `inject:""`
 }
 
 func (ctr *HelloController) Hello(c *gallop.Context) string {
-	return fmt.Sprint(ctr.Demo,ctr.Demo1)
+	return fmt.Sprint(ctr.Demo,ctr.Demo1,ctr.Cfg.B.C)
 }
 
 func (ctr *HelloController) Json(c *gallop.Context) gallop.Json{

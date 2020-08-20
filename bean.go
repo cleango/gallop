@@ -17,7 +17,11 @@ func injectValue(elem reflect.Value, prefix string) {
 			if prefix != "" {
 				conf = fmt.Sprintf("%s.%s", prefix, conf)
 			}
-			if elem.Field(i).Kind() == reflect.Struct {
+			if elem.Field(i).Kind() == reflect.Ptr {
+				vv:=reflect.New(elem.Field(i).Type().Elem())
+				injectValue(vv.Elem(), conf)
+				elem.Field(i).Set(reflect.ValueOf(vv.Interface()))
+			}else if elem.Field(i).Kind()==reflect.Struct{
 				injectValue(elem.Field(i), conf)
 			} else {
 				cc:=viper.Get(conf)
@@ -59,6 +63,7 @@ func (g *Gallop) Beans(configs ...interface{}) *Gallop {
 			}
 			g.aop.Provide(&obj)
 		}
+		g.aop.Provide(&inject.Object{Value: cc})
 	}
 	return g
 }

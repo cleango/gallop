@@ -8,7 +8,7 @@ type Demo struct {
 type Configuration struct {
 	Name string `value:"name"`
 	A int `value:"a"`
-	B struct{
+	B *struct{
 		C string `value:"c"`
 	} `value:"b"`
 
