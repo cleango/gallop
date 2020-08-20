@@ -1,12 +1,37 @@
 package gallop
 
 import (
+	"fmt"
 	"github.com/cleango/gallop/third_plugins/inject"
 	"github.com/spf13/viper"
 	"log"
 	"reflect"
 )
 
+func injectValue(elem reflect.Value, prefix string) {
+	//注入Bean
+	for i := 0; i < elem.NumField(); i++ {
+		field := elem.Type().Field(i)
+		conf := field.Tag.Get("value")
+		if conf != "" {
+			if prefix != "" {
+				conf = fmt.Sprintf("%s.%s", prefix, conf)
+			}
+			if elem.Field(i).Kind() == reflect.Struct {
+				injectValue(elem.Field(i), conf)
+			} else {
+				cc:=viper.Get(conf)
+				if cc!=nil{
+					val := reflect.ValueOf(cc)
+					if !val.IsZero() {
+						elem.Field(i).Set(val)
+					}
+				}
+			}
+		}
+
+	}
+}
 func (g *Gallop) Beans(configs ...interface{}) *Gallop {
 	for _, cc := range configs {
 		v := reflect.ValueOf(cc)
@@ -15,20 +40,9 @@ func (g *Gallop) Beans(configs ...interface{}) *Gallop {
 		}
 		//获取值
 		elem := v.Elem()
-		//注入Bean
-		for i := 0; i < elem.NumField(); i++ {
-			field := elem.Type().Field(i)
-			conf := field.Tag.Get("value")
-			if conf != "" {
-				val:=reflect.ValueOf(viper.Get(conf))
-				if !val.IsZero(){
-					elem.Field(i).Set(val)
-				}
-			}
+		injectValue(elem, "")
 
-		}
 		//注入Bean
-
 		for i := 0; i < v.NumMethod(); i++ {
 			method := v.Method(i)
 			out := method.Call(nil)
