@@ -3,7 +3,7 @@ package gallop
 import (
 	"context"
 	"fmt"
-	"github.com/gallop/third_plugins/inject"
+	"github.com/cleango/gallop/third_plugins/inject"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
