@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/gallop"
-	"github.com/gallop/example/app/config"
-	"github.com/gallop/example/app/router"
+	"github.com/cleango/gallop"
+	"github.com/cleango/gallop/example/app/config"
+	"github.com/cleango/gallop/example/app/router"
 )
 
 func main() {

@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/gallop"
-	"github.com/gallop/example/app/controller"
+	"github.com/cleango/gallop"
+	"github.com/cleango/gallop/example/app/controller"
 )
 
 type Api struct {

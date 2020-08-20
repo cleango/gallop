@@ -1,4 +1,4 @@
-module github.com/gallop
+module  github.com/cleango/gallop
 
 go 1.14
 

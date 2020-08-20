@@ -2,8 +2,8 @@ package controller
 
 import (
 	"fmt"
-	"github.com/gallop"
-	"github.com/gallop/example/app/config"
+	"github.com/cleango/gallop"
+	"github.com/cleango/gallop/example/app/config"
 	"github.com/gin-gonic/gin"
 )
 
