@@ -33,7 +33,12 @@ func Ignite() *Gallop {
 		op:       op,
 	}
 }
-
+func (g *Gallop) Use(middes ...IMiddleware) *Gallop {
+	for _,mid:=range middes{
+		g.engine.Use(MidFactory(mid))
+	}
+	return g
+}
 func (g *Gallop) Modular(name string, routers ...IRouter) *Gallop {
 	for _, r := range routers {
 		g.aop.Provide(&inject.Object{Value: r})

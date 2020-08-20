@@ -13,6 +13,13 @@ type Group struct {
 	*gin.RouterGroup
 }
 
+func (group *Group) Use(middleware IMiddleware) *Group {
+	group.RouterGroup.Use(MidFactory(middleware))
+	return group
+}
+func (group *Group) Group(name string) *Group {
+	return &Group{group.RouterGroup.Group(name)}
+}
 func (group *Group) Handle(httpMethod, relativePath string, handler interface{}) *Group {
 	if h := Convert(handler); h != nil {
 		group.RouterGroup.Handle(httpMethod, relativePath, h)
