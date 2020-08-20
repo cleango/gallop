@@ -1,4 +1,4 @@
-module gallop
+module github.com/gallop
 
 go 1.14
 

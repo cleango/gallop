@@ -3,9 +3,10 @@ package gallop
 import (
 	"context"
 	"fmt"
-	"gallop/third_plugins/inject"
+	"github.com/gallop/third_plugins/inject"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	"log"
 	"net/http"
 	"os"
@@ -61,6 +62,7 @@ func (g *Gallop) Launch() {
 }
 
 func (g *Gallop) run(op *Options) {
+	gin.SetMode(viper.GetString("mode"))
 	for k, routers := range g.modulars {
 		group := &Group{g.engine.Group(k)}
 		for _, r := range routers {

@@ -1,7 +1,7 @@
 package gallop
 
 import (
-	"gallop/third_plugins/inject"
+	"github.com/gallop/third_plugins/inject"
 	"github.com/spf13/viper"
 	"log"
 	"reflect"

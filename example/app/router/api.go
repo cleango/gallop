@@ -1,8 +1,8 @@
 package router
 
 import (
-	"gallop"
-	"gallop/example/app/controller"
+	"github.com/gallop"
+	"github.com/gallop/example/app/controller"
 )
 
 type Api struct {
