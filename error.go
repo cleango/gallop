@@ -2,7 +2,6 @@ package gallop
 
 import (
 	"fmt"
-	"net/http"
 )
 
 func Throw(err error) {
@@ -16,14 +15,3 @@ func ThrowWithErr(err, base error) {
 	}
 }
 
-type WebError struct {
-	StatusCode int
-	Data       interface{}
-}
-
-func Error200(data interface{}) *WebError {
-	return &WebError{
-		StatusCode: http.StatusOK,
-		Data:       data,
-	}
-}

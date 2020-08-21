@@ -13,7 +13,7 @@ type Group struct {
 	*gin.RouterGroup
 }
 
-func (group *Group) Use(middleware IMiddleware) *Group {
+func (group *Group) Use(middleware IMidHandler) *Group {
 	group.RouterGroup.Use(MidFactory(middleware))
 	return group
 }

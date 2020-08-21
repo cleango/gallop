@@ -21,6 +21,7 @@ type Gallop struct {
 	aop      inject.Graph
 	op       *Options
 }
+
 //Ignite 项目初始化
 func Ignite() *Gallop {
 	op := DefaultOptions()
@@ -34,8 +35,8 @@ func Ignite() *Gallop {
 		op:       op,
 	}
 }
-func (g *Gallop) Use(middes ...IMiddleware) *Gallop {
-	for _,mid:=range middes{
+func (g *Gallop) Use(middes ...IMidHandler) *Gallop {
+	for _, mid := range middes {
 		g.engine.Use(MidFactory(mid))
 	}
 	return g
