@@ -1,10 +1,18 @@
 package gallop
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 func Throw(err error) {
 	if err != nil {
 		panic(err)
+	}
+}
+func ThrowWithErr(err, base error) {
+	if err != nil {
+		panic(fmt.Errorf("%w %s", base, err.Error()))
 	}
 }
 
