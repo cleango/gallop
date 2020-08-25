@@ -13,6 +13,7 @@ func get_responder_list() []Responder {
 	once_resp_list.Do(func() {
 		responderList = []Responder{(StringResponder)(nil),
 			(JsonResponder)(nil),
+			(XMLResponder)(nil),
 		}
 	})
 	return responderList
