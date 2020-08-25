@@ -48,3 +48,13 @@ func (j JsonResponder) RespondTo() gin.HandlerFunc {
 		context.JSON(200, j(&Context{context}))
 	}
 }
+
+type XML interface {}
+
+type XMLResponder func(*Context) XML
+
+func (s XMLResponder) RespondTo() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.XML(200,s(&Context{c}))
+	}
+}
