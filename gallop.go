@@ -54,10 +54,13 @@ func (g *Gallop) Modular(name string, routers ...IRouter) *Gallop {
 	return g
 }
 
-func (g *Gallop) Launch() {
+func (g *Gallop) Launch(addr ...string) {
 
 	if err := g.aop.Populate(); err != nil {
 		log.Fatal(err)
+	}
+	if len(addr) > 0 {
+		g.op.AddrPort = addr[0]
 	}
 	g.run(g.op)
 }
