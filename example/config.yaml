@@ -2,3 +2,6 @@ name: "123"
 a: 123
 b:
   c: "11"
+
+logger:
+  stack: true

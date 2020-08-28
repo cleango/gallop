@@ -61,7 +61,9 @@ func (g *Gallop) Beans(configs ...interface{}) *Gallop {
 					log.Fatal("configuration type is error")
 				}
 			}
-			g.aop.Provide(&obj)
+			if len(out)>0{
+				g.aop.Provide(&obj)
+			}
 		}
 		g.aop.Provide(&inject.Object{Value: cc})
 	}

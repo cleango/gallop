@@ -3,6 +3,7 @@ package gallop
 import (
 	"context"
 	"fmt"
+	"github.com/cleango/gallop/logger"
 	"github.com/cleango/gallop/third_plugins/inject"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
@@ -28,12 +29,14 @@ func Ignite() *Gallop {
 	op.AddFlags(pflag.CommandLine)
 	InitFlags()
 	initConfig(op.ConfigPath)
-	return &Gallop{
+	g:= &Gallop{
 		modulars: make(map[string][]IRouter),
 		engine:   gin.New(),
 		aop:      inject.Graph{},
 		op:       op,
 	}
+	g.Beans(logger.NewLogFactory())
+	return g
 }
 func (g *Gallop) Use(middes ...IMidHandler) *Gallop {
 	for _, mid := range middes {
