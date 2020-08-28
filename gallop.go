@@ -2,7 +2,6 @@ package gallop
 
 import (
 	"context"
-	"fmt"
 	"github.com/cleango/gallop/logger"
 	"github.com/cleango/gallop/third_plugins/inject"
 	"github.com/gin-gonic/gin"
@@ -82,7 +81,7 @@ func (g *Gallop) run(op *Options) {
 	}
 	go func() {
 		// service connections
-		fmt.Printf("Listening and serving HTTP on %s\n", op.AddrPort)
+		log.Printf("Listening and serving HTTP on %s\n", op.AddrPort)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
