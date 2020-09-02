@@ -18,7 +18,6 @@ import (
 type Gallop struct {
 	modulars map[string][]IRouter
 	engine   *gin.Engine
-	aop      inject.Graph
 	op       *Options
 }
 
@@ -31,7 +30,6 @@ func Ignite() *Gallop {
 	g:= &Gallop{
 		modulars: make(map[string][]IRouter),
 		engine:   gin.New(),
-		aop:      inject.Graph{},
 		op:       op,
 	}
 	g.Beans(logger.NewLogFactory())
@@ -45,7 +43,7 @@ func (g *Gallop) Use(middes ...IMidHandler) *Gallop {
 }
 func (g *Gallop) Modular(name string, routers ...IRouter) *Gallop {
 	for _, r := range routers {
-		g.aop.Provide(&inject.Object{Value: r})
+		aop.Provide(&inject.Object{Value: r})
 	}
 	if r, ok := g.modulars[name]; ok {
 		r = append(r, routers...)
@@ -58,7 +56,7 @@ func (g *Gallop) Modular(name string, routers ...IRouter) *Gallop {
 
 func (g *Gallop) Launch(addr ...string) {
 
-	if err := g.aop.Populate(); err != nil {
+	if err := aop.Populate(); err != nil {
 		log.Fatal(err)
 	}
 	if len(addr) > 0 {

@@ -62,10 +62,10 @@ func (g *Gallop) Beans(configs ...interface{}) *Gallop {
 				}
 			}
 			if len(out)>0{
-				g.aop.Provide(&obj)
+				aop.Provide(&obj)
 			}
 		}
-		g.aop.Provide(&inject.Object{Value: cc})
+		aop.Provide(&inject.Object{Value: cc})
 	}
 	return g
 }

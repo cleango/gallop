@@ -66,6 +66,16 @@ type Graph struct {
 	named       map[string]*Object
 }
 
+//GetObjectByName 根据name获取对象
+func (g *Graph) GetObjectByName(name string) (interface{},error){
+
+	existing := g.named[name]
+	if existing == nil {
+		return nil,fmt.Errorf("did not find object named %s",name)
+	}
+	return existing.Value,nil
+}
+
 // Provide objects to the Graph. The Object documentation describes
 // the impact of various fields.
 func (g *Graph) Provide(objects ...*Object) error {
