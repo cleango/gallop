@@ -15,10 +15,22 @@ import (
 	"time"
 )
 
+const (
+	usage = `
+ _______       _ _             
+(_______)     | | |            
+ _   ___ _____| | | ___  ____  
+| | (_  (____ | | |/ _ \|  _ \ 
+| |___) / ___ | | | |_| | |_| |
+ \_____/\_____|\_)_)___/|  __/ 
+                        |_|    `
+)
+
 type Gallop struct {
 	modulars map[string][]IRouter
 	engine   *gin.Engine
 	op       *Options
+	usage    string
 }
 
 //Ignite 项目初始化
@@ -27,10 +39,11 @@ func Ignite() *Gallop {
 	op.AddFlags(pflag.CommandLine)
 	InitFlags()
 	initConfig(op.ConfigPath)
-	g:= &Gallop{
+	g := &Gallop{
 		modulars: make(map[string][]IRouter),
 		engine:   gin.New(),
 		op:       op,
+		usage:    usage,
 	}
 	g.Beans(logger.NewLogFactory())
 	return g
@@ -62,7 +75,11 @@ func (g *Gallop) Launch(addr ...string) {
 	if len(addr) > 0 {
 		g.op.AddrPort = addr[0]
 	}
+	log.Println(g.usage)
 	g.run(g.op)
+}
+func (g *Gallop) Banner(banner string) {
+	g.usage = banner
 }
 
 func (g *Gallop) run(op *Options) {
