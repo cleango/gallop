@@ -67,17 +67,23 @@ func (g *Gallop) Modular(name string, routers ...IRouter) *Gallop {
 	return g
 }
 
-func (g *Gallop) Launch(addr ...string) {
-
+//Preload 预执行，便于一些不需要web的项目，如果保持程序允许用开发自行控制
+func (g *Gallop) Preload() {
 	if err := aop.Populate(); err != nil {
 		log.Fatal(err)
 	}
+	log.Println(g.usage)
+}
+
+func (g *Gallop) Launch(addr ...string) {
+	g.Preload()
 	if len(addr) > 0 {
 		g.op.AddrPort = addr[0]
 	}
-	log.Println(g.usage)
+
 	g.run(g.op)
 }
+
 func (g *Gallop) Banner(banner string) {
 	g.usage = banner
 }
