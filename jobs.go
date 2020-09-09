@@ -19,7 +19,7 @@ func getCronTask() *cron.Cron {
 }
 
 //Job 注入脚本
-func (g *Gallop) Job(spec string, job cron.Job) *Gallop {
+func AddJob(spec string, job cron.Job) {
 	aop.Provide(&inject.Object{
 		Value:    job,
 	})
@@ -27,5 +27,9 @@ func (g *Gallop) Job(spec string, job cron.Job) *Gallop {
 	if err != nil {
 		log.Println(err)
 	}
+}
+//Job 注入脚本
+func (g *Gallop) Job(spec string, job cron.Job) *Gallop {
+	AddJob(spec,job)
 	return g
 }
