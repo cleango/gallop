@@ -18,7 +18,7 @@ func getCronTask() *cron.Cron {
 	return taskCron
 }
 
-//Job 注入脚本
+//AddJob 注入脚本
 func AddJob(spec string, job cron.Job) {
 	aop.Provide(&inject.Object{
 		Value:    job,
