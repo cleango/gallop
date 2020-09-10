@@ -18,18 +18,18 @@ func getCronTask() *cron.Cron {
 	return taskCron
 }
 
-//AddJob 注入脚本
+//AddJob 注入脚本,不支持
 func AddJob(spec string, job cron.Job) {
-	aop.Provide(&inject.Object{
-		Value:    job,
-	})
 	_, err := getCronTask().AddJob(spec, job)
 	if err != nil {
 		log.Println(err)
 	}
 }
-//Job 注入脚本
+//Job 注入脚本支持依赖对象
 func (g *Gallop) Job(spec string, job cron.Job) *Gallop {
+	aop.Provide(&inject.Object{
+		Value:    job,
+	})
 	AddJob(spec,job)
 	return g
 }
