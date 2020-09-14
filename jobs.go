@@ -19,11 +19,9 @@ func getCronTask() *cron.Cron {
 }
 
 //AddJob 注入脚本,不支持
-func AddJob(spec string, job cron.Job) {
-	_, err := getCronTask().AddJob(spec, job)
-	if err != nil {
-		log.Println(err)
-	}
+func AddJob(spec string, job cron.Job)(int,error) {
+	id, err := getCronTask().AddJob(spec, job)
+	return int(id),err
 }
 //Job 注入脚本支持依赖对象
 func (g *Gallop) Job(spec string, job cron.Job) *Gallop {
