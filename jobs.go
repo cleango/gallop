@@ -3,7 +3,6 @@ package gallop
 import (
 	"github.com/cleango/gallop/third_plugins/inject"
 	"github.com/robfig/cron/v3"
-	"log"
 	"sync"
 )
 
@@ -19,15 +18,20 @@ func getCronTask() *cron.Cron {
 }
 
 //AddJob 注入脚本,不支持
-func AddJob(spec string, job cron.Job)(int,error) {
+func AddJob(spec string, job cron.Job) (int, error) {
 	id, err := getCronTask().AddJob(spec, job)
-	return int(id),err
+	return int(id), err
 }
+
+func RemoveJob(id cron.EntryID) {
+	getCronTask().Remove(id)
+}
+
 //Job 注入脚本支持依赖对象
 func (g *Gallop) Job(spec string, job cron.Job) *Gallop {
 	aop.Provide(&inject.Object{
-		Value:    job,
+		Value: job,
 	})
-	AddJob(spec,job)
+	AddJob(spec, job)
 	return g
 }
