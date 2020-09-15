@@ -26,7 +26,7 @@ func OpenCors(engine *gin.Engine) {
 		} else {
 			cfg.AllowOrigins = strings.Split(origins, ",")
 		}
-		headers := viper.GetString("headers")
+		headers := viper.GetString("cors.headers")
 		if headers != "" {
 			cfg.AllowHeaders = strings.Split(headers, ",")
 		}
