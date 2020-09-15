@@ -22,6 +22,11 @@ func AddJob(spec string, job cron.Job)(int,error) {
 	id, err := getCronTask().AddJob(spec, job)
 	return int(id),err
 }
+
+//RemoveJob 删除脚本
+func RemoveJob(id int){
+	getCronTask().Remove(cron.EntryID(id))
+}
 //Job 注入脚本支持依赖对象
 func (g *Gallop) Job(spec string, job cron.Job) *Gallop {
 	aop.Provide(&inject.Object{
