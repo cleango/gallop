@@ -45,6 +45,7 @@ func Ignite() *Gallop {
 		op:       op,
 		usage:    usage,
 	}
+	OpenCors(g.engine)
 	g.Beans(logger.NewLogFactory())
 	return g
 }
