@@ -17,9 +17,15 @@ func MidFactory(h IMidHandler) gin.HandlerFunc {
 	}
 }
 
-func OpenCors(engine *gin.Engine)  {
+func OpenCors(engine *gin.Engine) {
 	if viper.GetBool("cors.open") {
 		cfg := cors.DefaultConfig()
+		origins := viper.GetString("cors.origin")
+		if origins == "" {
+			cfg.AllowAllOrigins = true
+		} else {
+			cfg.AllowOrigins = strings.Split(origins, ",")
+		}
 		headers := viper.GetString("headers")
 		if headers != "" {
 			cfg.AllowHeaders = strings.Split(headers, ",")
