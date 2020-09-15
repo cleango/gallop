@@ -3,7 +3,6 @@ package gallop
 import (
 	"github.com/cleango/gallop/third_plugins/inject"
 	"github.com/robfig/cron/v3"
-	"log"
 	"sync"
 )
 
