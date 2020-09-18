@@ -23,8 +23,9 @@ func AddJob(spec string, job cron.Job) (int, error) {
 	return int(id), err
 }
 
-func RemoveJob(id cron.EntryID) {
-	getCronTask().Remove(id)
+//RemoveJob 删除脚本
+func RemoveJob(id int) {
+	getCronTask().Remove(cron.EntryID(id))
 }
 
 //Job 注入脚本支持依赖对象
