@@ -82,6 +82,7 @@ func (g *Gallop) Preload() {
 }
 func (g *Gallop) Actions(act ...IAction) *Gallop {
 	aop.Provide(&inject.Object{Value: act})
+	g.actions= append(g.actions, act...)
 	return g
 }
 func (g *Gallop) Launch(addr ...string) {
