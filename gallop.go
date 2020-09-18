@@ -80,8 +80,9 @@ func (g *Gallop) Preload() {
 		v()
 	}
 }
-func (g *Gallop) BeforeLaunch(cbs ...func()) {
+func (g *Gallop) BeforeLaunch(cbs ...func()) *Gallop{
 	g.beferFuncs = append(g.beferFuncs, cbs...)
+	return g
 }
 func (g *Gallop) Launch(addr ...string) {
 	g.Preload()
