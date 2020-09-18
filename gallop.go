@@ -27,10 +27,11 @@ const (
 )
 
 type Gallop struct {
-	modulars map[string][]IRouter
-	engine   *gin.Engine
-	op       *Options
-	usage    string
+	modulars   map[string][]IRouter
+	engine     *gin.Engine
+	op         *Options
+	usage      string
+	beferFuncs []func()
 }
 
 //Ignite 项目初始化
@@ -40,10 +41,11 @@ func Ignite() *Gallop {
 	InitFlags()
 	initConfig(op.ConfigPath)
 	g := &Gallop{
-		modulars: make(map[string][]IRouter),
-		engine:   gin.New(),
-		op:       op,
-		usage:    usage,
+		modulars:   make(map[string][]IRouter),
+		engine:     gin.New(),
+		op:         op,
+		usage:      usage,
+		beferFuncs: make([]func(), 0),
 	}
 	OpenCors(g.engine)
 	g.Beans(logger.NewLogFactory())
@@ -74,8 +76,13 @@ func (g *Gallop) Preload() {
 		log.Fatal(err)
 	}
 	log.Println(g.usage)
+	for _, v := range g.beferFuncs {
+		v()
+	}
 }
-
+func (g *Gallop) BeforeLaunch(cbs ...func()) {
+	g.beferFuncs = append(g.beferFuncs, cbs...)
+}
 func (g *Gallop) Launch(addr ...string) {
 	g.Preload()
 	if len(addr) > 0 {
