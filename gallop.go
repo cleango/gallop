@@ -80,9 +80,11 @@ func (g *Gallop) Preload() {
 		v.Exec()
 	}
 }
-func (g *Gallop) Actions(act ...IAction) *Gallop {
-	aop.Provide(&inject.Object{Value: act})
-	g.actions= append(g.actions, act...)
+func (g *Gallop) Actions(acts ...IAction) *Gallop {
+	for _,v:=range acts{
+		aop.Provide(&inject.Object{Value: v})
+		g.actions= append(g.actions, v)
+	}
 	return g
 }
 func (g *Gallop) Launch(addr ...string) {
