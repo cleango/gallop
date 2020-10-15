@@ -5,6 +5,8 @@ import (
 	"github.com/cleango/gallop/logger"
 	"github.com/cleango/gallop/third_plugins/inject"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"log"
@@ -57,6 +59,20 @@ func (g *Gallop) Use(middes ...IMidHandler) *Gallop {
 	}
 	return g
 }
+
+func (g *Gallop) Validate(validators ...IValidator) *Gallop {
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		for _, item := range validators {
+			vv, tag := item.Validate()
+			if err := v.RegisterValidation(tag, vv); err != nil {
+				logger.Fatal("binding validator Error")
+			}
+		}
+	}
+
+	return g
+}
+
 func (g *Gallop) Modular(name string, routers ...IRouter) *Gallop {
 	for _, r := range routers {
 		aop.Provide(&inject.Object{Value: r})
