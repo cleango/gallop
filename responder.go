@@ -50,12 +50,13 @@ func (j JsonResponder) RespondTo() gin.HandlerFunc {
 	}
 }
 
-type XML interface {}
+type XML string
 
 type XMLResponder func(*Context) XML
 
 func (s XMLResponder) RespondTo() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.XML(200,s(&Context{c}))
+		c.Writer.Header()["content-type"] = []string{"application/xml; charset=utf-8"}
+		c.String(200, string(s(&Context{c})))
 	}
 }
