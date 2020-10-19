@@ -62,6 +62,11 @@ func (group *Group) HEAD(relativePath string, handlers interface{}) *Group {
 	return group.Handle(http.MethodHead, relativePath, handlers)
 }
 
+// HEAD is a shortcut for router.Handle("HEAD", path, handle).
+func (group *Group) Native() *gin.RouterGroup {
+	return group.RouterGroup
+}
+
 // Any registers a route that matches all the HTTP methods.
 // GET, POST, PUT, PATCH, HEAD, OPTIONS, DELETE, CONNECT, TRACE.
 func (group *Group) Any(relativePath string, handlers interface{}) *Group {
