@@ -1,6 +1,9 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Demo struct {
 	Name string
@@ -19,7 +22,13 @@ func NewConfiguration() *Configuration {
 }
 
 func (c *Configuration) NewDemo() *Demo {
-	fmt.Println(c.B.C,"======")
+
+	go func() {
+		for {
+			time.Sleep(5*time.Second)
+			fmt.Println(c.B.C,"======")
+		}
+	}()
 	return &Demo{c.Name}
 }
 

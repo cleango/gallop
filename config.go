@@ -1,6 +1,7 @@
 package gallop
 
 import (
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"log"
 	"strings"
@@ -16,4 +17,8 @@ func initConfig(path string) {
 	if err := viper.ReadInConfig(); err != nil { // viper解析配置文件
 		log.Fatal(err)
 	}
+	viper.WatchConfig()
+	viper.OnConfigChange(func(in fsnotify.Event) {
+
+	})
 }

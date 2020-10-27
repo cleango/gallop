@@ -3,6 +3,7 @@ package gallop
 import (
 	"fmt"
 	"github.com/cleango/gallop/third_plugins/inject"
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"log"
 	"reflect"
@@ -37,7 +38,9 @@ func injectValue(elem reflect.Value, prefix string) {
 	}
 }
 func (g *Gallop) Beans(configs ...interface{}) *Gallop {
+
 	for _, cc := range configs {
+		g.configs=append(g.configs, cc)
 		v := reflect.ValueOf(cc)
 		if v.Kind() != reflect.Ptr {
 			log.Fatal(" config is not ptr")
@@ -45,7 +48,6 @@ func (g *Gallop) Beans(configs ...interface{}) *Gallop {
 		//获取值
 		elem := v.Elem()
 		injectValue(elem, "")
-
 		//注入Bean
 		for i := 0; i < v.NumMethod(); i++ {
 			method := v.Method(i)
@@ -67,5 +69,17 @@ func (g *Gallop) Beans(configs ...interface{}) *Gallop {
 		}
 		aop.Provide(&inject.Object{Value: cc})
 	}
+	g.onConfigChange()
 	return g
+}
+
+func (g *Gallop) onConfigChange() {
+	viper.OnConfigChange(func(in fsnotify.Event) {
+		for _, cc := range g.configs {
+			v := reflect.ValueOf(cc)
+			//获取值
+			elem := v.Elem()
+			injectValue(elem, "")
+		}
+	})
 }

@@ -34,6 +34,7 @@ type Gallop struct {
 	op       *Options
 	usage    string
 	actions  []IAction
+	configs []interface{}
 }
 
 //Ignite 项目初始化
@@ -48,6 +49,7 @@ func Ignite() *Gallop {
 		op:       op,
 		usage:    usage,
 		actions:  make([]IAction, 0),
+		configs: make([]interface{},0),
 	}
 	OpenCors(g.engine)
 	g.Beans(logger.NewLogFactory())
@@ -135,7 +137,6 @@ func (g *Gallop) run(op *Options) {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
-
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
 	quit := make(chan os.Signal)
@@ -146,7 +147,7 @@ func (g *Gallop) run(op *Options) {
 	<-quit
 	log.Println("Shutdown Server ...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatal("Server Shutdown:", err)
