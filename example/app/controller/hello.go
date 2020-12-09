@@ -7,6 +7,7 @@ import (
 	"github.com/cleango/gallop/example/app/job"
 	"github.com/cleango/gallop/logger"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type HelloController struct {
@@ -29,3 +30,16 @@ func (ctr *HelloController) Json(c *gallop.Context) gallop.Json{
 		"hello":"world",
 	}
 }
+
+func (ctr *HelloController) File(c *gallop.Context) gallop.File{
+	head:=http.Header{}
+	head.Set("Content-Type", "application/octet-stream")
+	head.Set("Content-Disposition", "attachment; filename="+"Workbook.xls")
+	head.Set("Content-Transfer-Encoding", "binary")
+	return gallop.File{
+		Data:        []byte("123, 123, 12312, 3123"),
+		ContentType: "application/octet-stream",
+		FileName:    "1.csv",
+	}
+}
+

@@ -16,4 +16,5 @@ func NewRouter() *Router {
 func (r *Router) Builder(group *gallop.Group) {
 	group.GET("/", r.Hello.Hello)
 	group.GET("/json", r.Hello.Json)
+	group.GET("/file", r.Hello.File)
 }

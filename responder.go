@@ -14,6 +14,7 @@ func get_responder_list() []Responder {
 		responderList = []Responder{(StringResponder)(nil),
 			(JsonResponder)(nil),
 			(XMLResponder)(nil),
+			(FileResponder)(nil),
 		}
 	})
 	return responderList
@@ -58,5 +59,22 @@ func (s XMLResponder) RespondTo() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header()["content-type"] = []string{"application/xml; charset=utf-8"}
 		c.String(200, s(&Context{c}).(string))
+	}
+}
+
+type File struct {
+	Data        []byte
+	ContentType string
+	FileName    string
+}
+
+type FileResponder func(*Context) File
+
+func (f FileResponder) RespondTo() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		file := f(&Context{c})
+		c.Header("Content-Disposition", "attachment; filename="+file.FileName)
+		c.Header("Content-Transfer-Encoding", "binary")
+		c.Data(200, file.ContentType, file.Data)
 	}
 }
