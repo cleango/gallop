@@ -1,4 +1,4 @@
-package jsonfield
+package fields
 
 import (
 	"time"
