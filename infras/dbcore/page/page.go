@@ -16,7 +16,6 @@ type Query interface {
 	Build() builder.Cond
 	GetAsc() []string
 	GetDesc() []string
-	GetPage() Result
 }
 
 //Params 分页参数
@@ -44,14 +43,6 @@ func (p *Params) GetPageSize() int {
 		return 100
 	}
 	return p.Limit
-}
-
-//GetPage 获取分页
-func (p *Params) GetPage() Result {
-	return Result{
-		PageIndex: p.GetPageIndex(),
-		PageSize:  p.GetPageSize(),
-	}
 }
 
 //GetAsc 获取正序
