@@ -1,10 +1,9 @@
 package page
 
 import (
+	"fmt"
 	"github.com/cleango/gallop/infras/errs"
 	"math"
-	"strings"
-
 	"xorm.io/builder"
 	"xorm.io/xorm"
 )
@@ -14,16 +13,15 @@ type Query interface {
 	GetPageIndex() int
 	GetPageSize() int
 	Build() builder.Cond
-	GetAsc() []string
-	GetDesc() []string
+	GetOrder() string
 }
 
 //Params 分页参数
 type Params struct {
 	Page  int    `json:"page" form:"page"`
 	Limit int    `json:"limit" form:"limit"`
-	Asc   string `json:"asc" form:"asc"`
-	Desc  string `json:"desc" form:"desc"`
+	Sort  string `json:"sort" form:"sort"`
+	Order string `json:"order" form:"order"`
 }
 
 //GetPageIndex 获取当前页码
@@ -45,22 +43,9 @@ func (p *Params) GetPageSize() int {
 	return p.Limit
 }
 
-//GetAsc 获取正序
-func (p *Params) GetAsc() []string {
-	s := strings.TrimSpace(p.Asc)
-	if s == "" {
-		return []string{}
-	}
-	return strings.Split(s, ",")
-}
-
-//GetDesc 获取倒叙
-func (p *Params) GetDesc() []string {
-	s := strings.TrimSpace(p.Desc)
-	if s == "" {
-		return []string{}
-	}
-	return strings.Split(s, ",")
+//GetOrder 获取排序
+func (p *Params) GetOrder() string {
+	return fmt.Sprintf("%s %s", p.Sort, p.Order)
 }
 
 //Data 分页结果
@@ -100,13 +85,9 @@ func Execute(db *xorm.Session, query Query, bean interface{}) (*Result, error) {
 		db = db.Where(sql, args...)
 	}
 	db = db.Limit(query.GetPageSize(), (pageIndex-1)*pageSize)
-	asc := query.GetAsc()
-	if len(asc) > 0 {
-		db = db.Asc(asc...)
-	}
-	desc := query.GetDesc()
-	if len(desc) > 0 {
-		db = db.Desc(desc...)
+	order := query.GetOrder()
+	if len(order) > 0 {
+		db = db.OrderBy(order)
 	}
 	var total int64
 	total, err = db.FindAndCount(bean)
@@ -125,13 +106,9 @@ func ExecAll(db *xorm.Session, query Query, bean interface{}) (err error) {
 	if sql != "" {
 		db = db.Where(sql, args...)
 	}
-	asc := query.GetAsc()
-	if len(asc) > 0 {
-		db = db.Asc(asc...)
-	}
-	desc := query.GetDesc()
-	if len(desc) > 0 {
-		db = db.Desc(desc...)
+	order := query.GetOrder()
+	if len(order) > 0 {
+		db = db.OrderBy(order)
 	}
 	err = db.Find(bean)
 	if err != nil {
