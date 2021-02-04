@@ -45,7 +45,10 @@ func (p *Params) GetPageSize() int {
 
 //GetOrder 获取排序
 func (p *Params) GetOrder() string {
-	return fmt.Sprintf("%s %s", p.Sort, p.Order)
+	if len(p.Sort) > 0 && len(p.Order) > 0 {
+		return fmt.Sprintf("%s %s", p.Sort, p.Order)
+	}
+	return ""
 }
 
 //Data 分页结果
