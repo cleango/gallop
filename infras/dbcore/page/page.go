@@ -2,6 +2,7 @@ package page
 
 import (
 	"github.com/cleango/gallop/infras/errs"
+	"math"
 	"strings"
 
 	"xorm.io/builder"
@@ -20,29 +21,29 @@ type Query interface {
 
 //Params 分页参数
 type Params struct {
-	PageIndex int    `json:"page_index" form:"page_index"`
-	PageSize  int    `json:"page_size" form:"page_size"`
-	Asc       string `json:"asc" form:"asc"`
-	Desc      string `json:"desc" form:"desc"`
+	Page  int    `json:"page" form:"page"`
+	Limit int    `json:"limit" form:"limit"`
+	Asc   string `json:"asc" form:"asc"`
+	Desc  string `json:"desc" form:"desc"`
 }
 
 //GetPageIndex 获取当前页码
 func (p *Params) GetPageIndex() int {
-	if p.PageIndex == 0 {
+	if p.Page == 0 {
 		return 1
 	}
-	return p.PageIndex
+	return p.Page
 }
 
 //GetPageSize 获取分页大小
 func (p *Params) GetPageSize() int {
-	if p.PageSize == 0 {
+	if p.Limit == 0 {
 		return 20
 	}
-	if p.PageSize > 100 {
+	if p.Limit > 100 {
 		return 100
 	}
-	return p.PageSize
+	return p.Limit
 }
 
 //GetPage 获取分页
@@ -73,43 +74,41 @@ func (p *Params) GetDesc() []string {
 
 //Data 分页结果
 type Result struct {
-	PageIndex int   `json:"page_index"`
-	PageSize  int   `json:"page_size"`
-	Total     int64 `json:"total"`
+	Records interface{} `json:"records"`
+	Current int         `json:"current"`
+	Pages   int         `json:"pages"`
+	Size    int         `json:"size"`
+	Total   int         `json:"total"`
+}
+
+func (r *Result) WithRecords(data interface{}) *Result {
+	r.Records = data
+	return r
+}
+func NewResult(page, limit, total int) *Result {
+	pages := int(math.Ceil(float64(total) / float64(limit)))
+	return &Result{
+		Records: nil,
+		Current: page,
+		Pages:   pages,
+		Size:    limit,
+		Total:   total,
+	}
 }
 
 //Execute 分页查询
-func Execute(db *xorm.Session, query Query, bean interface{}) (res Result, err error) {
-	res = Result{}
-	defer func() {
-		err = errs.WithDBErr(err)
-	}()
+func Execute(db *xorm.Session, query Query, bean interface{}) (*Result, error) {
 	sql, args, err := builder.ToSQL(query.Build())
 	if err != nil {
-		return res, errs.WithDBErr(err)
+		return nil, errs.WithDBErr(err)
 	}
-	res.PageIndex = query.GetPageIndex()
-	res.PageSize = query.GetPageSize()
+	pageIndex := query.GetPageIndex()
+	pageSize := query.GetPageSize()
 
 	if sql != "" {
 		db = db.Where(sql, args...)
 	}
-	if res.PageSize == -1 {
-		asc := query.GetAsc()
-		if len(asc) > 0 {
-			db = db.Asc(asc...)
-		}
-		desc := query.GetDesc()
-		if len(desc) > 0 {
-			db = db.Desc(desc...)
-		}
-		err = db.Find(bean)
-		if err != nil {
-			return
-		}
-		return
-	}
-	db = db.Limit(query.GetPageSize(), (res.PageIndex-1)*res.PageSize)
+	db = db.Limit(query.GetPageSize(), (pageIndex-1)*pageSize)
 	asc := query.GetAsc()
 	if len(asc) > 0 {
 		db = db.Asc(asc...)
@@ -118,21 +117,30 @@ func Execute(db *xorm.Session, query Query, bean interface{}) (res Result, err e
 	if len(desc) > 0 {
 		db = db.Desc(desc...)
 	}
-	res.Total, err = db.FindAndCount(bean)
+	var total int64
+	total, err = db.FindAndCount(bean)
 	if err != nil {
-		return res, errs.WithDBErr(err)
+		return nil, errs.WithDBErr(err)
 	}
-	return
+	return NewResult(pageIndex, pageSize, int(total)).WithRecords(bean), nil
 }
 
 //ExecAll 不分页查询多条
-func ExecAll(db *xorm.Session, query builder.Cond, bean interface{}) (err error) {
+func ExecAll(db *xorm.Session, query Query, bean interface{}) (err error) {
 	sql, args, err := builder.ToSQL(query)
 	if err != nil {
 		return err
 	}
 	if sql != "" {
 		db = db.Where(sql, args...)
+	}
+	asc := query.GetAsc()
+	if len(asc) > 0 {
+		db = db.Asc(asc...)
+	}
+	desc := query.GetDesc()
+	if len(desc) > 0 {
+		db = db.Desc(desc...)
 	}
 	err = db.Find(bean)
 	if err != nil {
@@ -142,7 +150,8 @@ func ExecAll(db *xorm.Session, query builder.Cond, bean interface{}) (err error)
 }
 
 //ExecOne 动态查询获取一条数据
-func ExecOne(db *xorm.Session, query builder.Cond, bean interface{}) (has bool, err error) {
+func ExecOne(db *xorm.Session, query Query, bean interface{}) (has bool, err error) {
+
 	sql, args, err := builder.ToSQL(query)
 	if err != nil {
 		return false, errs.WithDBErr(err)
