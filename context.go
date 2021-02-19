@@ -21,3 +21,25 @@ func (c *Context) ShouldBind(obj interface{}) error {
 	}
 	return nil
 }
+func (c *Context) ShouldBindUri(obj interface{}) error {
+	if err := c.Context.ShouldBindUri(obj); err != nil {
+		return errs.WithViewErr(err)
+	}
+
+	err := gvalid.CheckStruct(obj, nil)
+	if err != nil {
+		return errs.WithViewErr(err)
+	}
+	return nil
+}
+func (c *Context) ShouldBindHeader(obj interface{}) error {
+	if err := c.Context.ShouldBindHeader(obj); err != nil {
+		return errs.WithViewErr(err)
+	}
+
+	err := gvalid.CheckStruct(obj, nil)
+	if err != nil {
+		return errs.WithViewErr(err)
+	}
+	return nil
+}
