@@ -102,7 +102,7 @@ func Execute(db *xorm.Session, query Query, bean interface{}) (*Result, error) {
 
 //ExecAll 不分页查询多条
 func ExecAll(db *xorm.Session, query Query, bean interface{}) (err error) {
-	sql, args, err := builder.ToSQL(query)
+	sql, args, err := builder.ToSQL(query.Build())
 	if err != nil {
 		return err
 	}
@@ -122,8 +122,7 @@ func ExecAll(db *xorm.Session, query Query, bean interface{}) (err error) {
 
 //ExecOne 动态查询获取一条数据
 func ExecOne(db *xorm.Session, query Query, bean interface{}) (has bool, err error) {
-
-	sql, args, err := builder.ToSQL(query)
+	sql, args, err := builder.ToSQL(query.Build())
 	if err != nil {
 		return false, errs.WithDBErr(err)
 	}
