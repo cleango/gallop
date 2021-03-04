@@ -6,6 +6,8 @@ import (
 	"sync"
 )
 
+const RspBodyKey = "gallop_rsp_key"
+
 var responderList []Responder
 var once_resp_list sync.Once
 
@@ -38,7 +40,9 @@ type StringResponder func(*Context) string
 
 func (s StringResponder) RespondTo() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.String(200, s(&Context{c}))
+		body := s(&Context{c})
+		c.Set(RspBodyKey, body)
+		c.String(200, body)
 	}
 }
 
@@ -47,7 +51,9 @@ type JsonResponder func(*Context) Json
 
 func (j JsonResponder) RespondTo() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		context.JSON(200, j(&Context{context}))
+		body := j(&Context{context})
+		context.Set(RspBodyKey, body)
+		context.JSON(200, body)
 	}
 }
 
@@ -58,7 +64,9 @@ type XMLResponder func(*Context) XML
 func (s XMLResponder) RespondTo() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header()["content-type"] = []string{"application/xml; charset=utf-8"}
-		c.String(200, s(&Context{c}).(string))
+		body := s(&Context{c}).(string)
+		c.Set(RspBodyKey, body)
+		c.String(200, body)
 	}
 }
 
