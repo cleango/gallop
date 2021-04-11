@@ -1,7 +1,6 @@
 package gallop
 
 import (
-	"context"
 	"fmt"
 	"github.com/cleango/gallop/third_plugins/inject"
 	"github.com/fsnotify/fsnotify"
@@ -9,11 +8,7 @@ import (
 	"log"
 	"reflect"
 )
-type FunShutdown func(ctx context.Context)
-type Shutdown context.Context
-type IShutdown interface {
-	Shutdown(Shutdown)
-}
+
 
 func injectValue(elem reflect.Value, prefix string) {
 	//注入Bean
@@ -65,9 +60,6 @@ func (g *Gallop) Beans(configs ...interface{}) *Gallop {
 					obj.Name = v.Interface().(string)
 				case reflect.Ptr:
 					obj.Value = v.Interface()
-					if f, ok := obj.Value.(IShutdown); ok {
-						g.closeList = append(g.closeList, f)
-					}
 				default:
 					log.Fatal("configuration type is error")
 				}

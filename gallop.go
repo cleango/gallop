@@ -35,7 +35,7 @@ type Gallop struct {
 	usage     string
 	actions   []IAction
 	configs   []interface{}
-	closeList []IShutdown
+	closeList []IClose
 }
 
 //Ignite 项目初始化
@@ -51,7 +51,7 @@ func Ignite() *Gallop {
 		usage:     usage,
 		actions:   make([]IAction, 0),
 		configs:   make([]interface{}, 0),
-		closeList: make([]IShutdown, 0),
+		closeList: make([]IClose, 0),
 	}
 	OpenCors(g.engine)
 	g.Beans(logger.NewLogFactory())
@@ -102,6 +102,9 @@ func (g *Gallop) Preload() {
 }
 func (g *Gallop) Actions(acts ...IAction) *Gallop {
 	for _, v := range acts {
+		if f, ok := v.(IClose); ok {
+			g.closeList = append(g.closeList, f)
+		}
 		aop.Provide(&inject.Object{Value: v})
 		g.actions = append(g.actions, v)
 	}
