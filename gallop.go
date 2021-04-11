@@ -29,12 +29,13 @@ const (
 )
 
 type Gallop struct {
-	modulars map[string][]IRouter
-	engine   *gin.Engine
-	op       *Options
-	usage    string
-	actions  []IAction
-	configs []interface{}
+	modulars  map[string][]IRouter
+	engine    *gin.Engine
+	op        *Options
+	usage     string
+	actions   []IAction
+	configs   []interface{}
+	closeList []IShutdown
 }
 
 //Ignite 项目初始化
@@ -44,12 +45,13 @@ func Ignite() *Gallop {
 	InitFlags()
 	initConfig(op.ConfigPath)
 	g := &Gallop{
-		modulars: make(map[string][]IRouter),
-		engine:   gin.New(),
-		op:       op,
-		usage:    usage,
-		actions:  make([]IAction, 0),
-		configs: make([]interface{},0),
+		modulars:  make(map[string][]IRouter),
+		engine:    gin.New(),
+		op:        op,
+		usage:     usage,
+		actions:   make([]IAction, 0),
+		configs:   make([]interface{}, 0),
+		closeList: make([]IShutdown, 0),
 	}
 	OpenCors(g.engine)
 	g.Beans(logger.NewLogFactory())
@@ -99,9 +101,9 @@ func (g *Gallop) Preload() {
 	}
 }
 func (g *Gallop) Actions(acts ...IAction) *Gallop {
-	for _,v:=range acts{
+	for _, v := range acts {
 		aop.Provide(&inject.Object{Value: v})
-		g.actions= append(g.actions, v)
+		g.actions = append(g.actions, v)
 	}
 	return g
 }
@@ -146,7 +148,9 @@ func (g *Gallop) run(op *Options) {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutdown Server ...")
-
+	for _, v := range g.closeList {
+		v.Shutdown(context.Background())
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {

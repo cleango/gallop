@@ -1,6 +1,7 @@
 package gallop
 
 import (
+	"context"
 	"fmt"
 	"github.com/cleango/gallop/third_plugins/inject"
 	"github.com/fsnotify/fsnotify"
@@ -8,6 +9,11 @@ import (
 	"log"
 	"reflect"
 )
+type FunShutdown func(ctx context.Context)
+type Shutdown context.Context
+type IShutdown interface {
+	Shutdown(Shutdown)
+}
 
 func injectValue(elem reflect.Value, prefix string) {
 	//注入Bean
@@ -19,14 +25,14 @@ func injectValue(elem reflect.Value, prefix string) {
 				conf = fmt.Sprintf("%s.%s", prefix, conf)
 			}
 			if elem.Field(i).Kind() == reflect.Ptr {
-				vv:=reflect.New(elem.Field(i).Type().Elem())
+				vv := reflect.New(elem.Field(i).Type().Elem())
 				injectValue(vv.Elem(), conf)
 				elem.Field(i).Set(reflect.ValueOf(vv.Interface()))
-			}else if elem.Field(i).Kind()==reflect.Struct{
+			} else if elem.Field(i).Kind() == reflect.Struct {
 				injectValue(elem.Field(i), conf)
 			} else {
-				cc:=viper.Get(conf)
-				if cc!=nil{
+				cc := viper.Get(conf)
+				if cc != nil {
 					val := reflect.ValueOf(cc)
 					if !val.IsZero() {
 						elem.Field(i).Set(val)
@@ -40,7 +46,7 @@ func injectValue(elem reflect.Value, prefix string) {
 func (g *Gallop) Beans(configs ...interface{}) *Gallop {
 
 	for _, cc := range configs {
-		g.configs=append(g.configs, cc)
+		g.configs = append(g.configs, cc)
 		v := reflect.ValueOf(cc)
 		if v.Kind() != reflect.Ptr {
 			log.Fatal(" config is not ptr")
@@ -59,11 +65,14 @@ func (g *Gallop) Beans(configs ...interface{}) *Gallop {
 					obj.Name = v.Interface().(string)
 				case reflect.Ptr:
 					obj.Value = v.Interface()
+					if f, ok := obj.Value.(IShutdown); ok {
+						g.closeList = append(g.closeList, f)
+					}
 				default:
 					log.Fatal("configuration type is error")
 				}
 			}
-			if len(out)>0{
+			if len(out) > 0 {
 				aop.Provide(&obj)
 			}
 		}
