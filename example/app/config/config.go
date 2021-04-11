@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/cleango/gallop"
 	"time"
 )
 
@@ -15,6 +16,10 @@ type Configuration struct {
 		C string `value:"c"`
 	} `value:"b"`
 
+}
+
+func (c *Demo) Shutdown(ctx gallop.Shutdown)  {
+	print("close")
 }
 
 func NewConfiguration() *Configuration {
