@@ -96,7 +96,7 @@ func getWriter(c LogConfig, level string) io.Writer {
 		MaxSize:    100,
 		MaxBackups: 10,
 		MaxAge:     20,
-		Compress:   true,
+		Compress:   false,
 	}
 }
 
