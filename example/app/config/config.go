@@ -11,14 +11,13 @@ type Demo struct {
 }
 type Configuration struct {
 	Name string `value:"name"`
-	A int `value:"a"`
-	B *struct{
+	A    int    `value:"a"`
+	B    *struct {
 		C string `value:"c"`
 	} `value:"b"`
-
 }
 
-func (c *Demo) Shutdown(ctx gallop.Shutdown)  {
+func (c *Demo) Shutdown(ctx gallop.CloseContext) {
 	print("close")
 }
 
@@ -30,14 +29,13 @@ func (c *Configuration) NewDemo() *Demo {
 
 	go func() {
 		for {
-			time.Sleep(5*time.Second)
-			fmt.Println(c.B.C,"======")
+			time.Sleep(5 * time.Second)
+			fmt.Println(c.B.C, "======")
 		}
 	}()
 	return &Demo{c.Name}
 }
 
-func (c *Configuration) NewDemo1() (string,*Demo) {
-	return "demo",&Demo{Name: "larry"}
+func (c *Configuration) NewDemo1() (string, *Demo) {
+	return "demo", &Demo{Name: "larry"}
 }
-
