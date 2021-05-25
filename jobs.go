@@ -18,23 +18,46 @@ func getCronTask() *cron.Cron {
 	return taskCron
 }
 
-type jobE struct {
-	job    cron.Job
-	isRun  bool
-	isOnly bool
+//jobOption 脚本属性
+type jobOption func(g *jobOptions)
+
+type jobOptions struct {
+	oneRun bool
 }
 
-func newJobE(job cron.Job, only bool) *jobE {
-	return &jobE{job: job, isOnly: only}
+func newJobOptions() *jobOptions {
+	return &jobOptions{
+		oneRun: true,
+	}
 }
 
-func (j *jobE) Run() {
+type JobOption func(op *jobOptions)
+
+//JobOneOption 对局属性
+func JobOneOption(b bool) JobOption {
+	return func(g *jobOptions) {
+		g.oneRun = b
+	}
+}
+
+type jobExecute struct {
+	job     cron.Job
+	isRun   bool
+	options *jobOptions
+	id      int
+}
+
+func newJobExecute(job cron.Job, options *jobOptions) *jobExecute {
+	return &jobExecute{job: job, options: options}
+}
+
+func (j *jobExecute) Run() {
 	defer func() {
 		if err := recover(); err != nil {
 			logger.Error(err.(error))
 		}
 	}()
-	if j.isOnly {
+	if j.options.oneRun {
 		if j.isRun {
 			return
 		}
@@ -47,8 +70,14 @@ func (j *jobE) Run() {
 }
 
 //AddJob 注入脚本,不支持
-func AddJob(spec string, job *jobE) (int, error) {
-	id, err := getCronTask().AddJob(spec, job)
+func AddJob(spec string, job cron.Job, options ...JobOption) (int, error) {
+	opt := newJobOptions()
+	for _, v := range options {
+		v(opt)
+	}
+	ex := newJobExecute(job, opt)
+	id, err := getCronTask().AddJob(spec, ex)
+	ex.id = int(id)
 	return int(id), err
 }
 
@@ -58,14 +87,11 @@ func RemoveJob(id int) {
 }
 
 //Job 注入脚本支持依赖对象
-func (g *Gallop) Job(spec string, job cron.Job, params ...bool) *Gallop {
-	isOnly := true
-	if len(params) == 1 {
-		isOnly = params[0]
-	}
+func (g *Gallop) Job(spec string, job cron.Job, options ...JobOption) *Gallop {
 	aop.Provide(&inject.Object{
 		Value: job,
 	})
-	AddJob(spec, newJobE(job, isOnly))
+
+	AddJob(spec, job)
 	return g
 }
