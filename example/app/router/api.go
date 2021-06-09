@@ -14,5 +14,6 @@ func NewApi() *Api {
 }
 
 func (a *Api) Builder(group *gallop.Group) {
-	group.GET("/",a.Hello.Hello)
+	group.GET("/", a.Hello.Hello)
+	group.GET("/valid", a.Hello.Valid)
 }

@@ -15,7 +15,18 @@ type HelloController struct {
 	Demo1 *config.Demo          `inject:"demo"`
 	Cfg   *config.Configuration `inject:""`
 }
+type User struct {
+	Name string `json:"name" form:"name" v:"required#请输入用户姓名"`
+	Type int    `json:"type" form:"type" v:"required#请选择用户类型"`
+}
 
+func (ctr *HelloController) Valid(c *gallop.Context) string {
+	var user User
+	if err := c.ShouldBind(&user); err != nil {
+		gallop.Throw(err)
+	}
+	return "success"
+}
 func (ctr *HelloController) Hello(c *gallop.Context) string {
 	filed := logger.LogField{}
 	filed["req_id"] = "xxxxxxxxxxxxx"

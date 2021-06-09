@@ -14,8 +14,7 @@ func (c *Context) ShouldBind(obj interface{}) error {
 	if err := c.Context.ShouldBind(obj); err != nil {
 		return errs.WithViewErr(err)
 	}
-
-	err := gvalid.CheckStruct(obj, nil)
+	err := gvalid.New().CheckStruct(obj)
 	if err != nil {
 		return errs.WithViewErr(err)
 	}
@@ -26,7 +25,7 @@ func (c *Context) ShouldBindUri(obj interface{}) error {
 		return errs.WithViewErr(err)
 	}
 
-	err := gvalid.CheckStruct(obj, nil)
+	err := gvalid.New().CheckStruct(obj)
 	if err != nil {
 		return errs.WithViewErr(err)
 	}
@@ -37,7 +36,7 @@ func (c *Context) ShouldBindHeader(obj interface{}) error {
 		return errs.WithViewErr(err)
 	}
 
-	err := gvalid.CheckStruct(obj, nil)
+	err := gvalid.New().CheckStruct(obj)
 	if err != nil {
 		return errs.WithViewErr(err)
 	}
