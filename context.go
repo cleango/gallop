@@ -14,10 +14,10 @@ func (c *Context) ShouldBind(obj interface{}) error {
 	if err := c.Context.ShouldBind(obj); err != nil {
 		return errs.WithViewErr(err)
 	}
-	err := gvalid.New().CheckStruct(obj)
-	if err != nil {
-		return errs.WithViewErr(err)
-	}
+	//err := gvalid.New().CheckValue(obj)
+	//if err != nil {
+	//	return errs.WithViewErr(err)
+	//}
 	return nil
 }
 func (c *Context) ShouldBindUri(obj interface{}) error {
@@ -25,10 +25,10 @@ func (c *Context) ShouldBindUri(obj interface{}) error {
 		return errs.WithViewErr(err)
 	}
 
-	err := gvalid.New().CheckStruct(obj)
-	if err != nil {
-		return errs.WithViewErr(err)
-	}
+	//err := gvalid.New().CheckStruct(obj)
+	//if err != nil {
+	//	return errs.WithViewErr(err)
+	//}
 	return nil
 }
 func (c *Context) ShouldBindHeader(obj interface{}) error {

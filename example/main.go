@@ -16,5 +16,5 @@ func main() {
 		//Job("@every 3s",&job.Hello1{})
 	res,err:=gallop.GetBeanByName("demo")
 	fmt.Println(err,res.(*config.Demo))
-	app.Launch()
+	app.Launch(":9000")
 }

@@ -21,8 +21,10 @@ type User struct {
 }
 
 func (ctr *HelloController) Valid(c *gallop.Context) string {
-	var user User
-	if err := c.ShouldBind(&user); err != nil {
+	var req User
+
+	//req:=cmap.Map{}
+	if err := c.ShouldBind(&req); err != nil {
 		gallop.Throw(err)
 	}
 	return "success"
