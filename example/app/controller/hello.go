@@ -30,12 +30,13 @@ func (ctr *HelloController) Valid(c *gallop.Context) string {
 	return "success"
 }
 func (ctr *HelloController) Hello(c *gallop.Context) string {
+
 	filed := logger.LogField{}
 	filed["req_id"] = "xxxxxxxxxxxxx"
 	logger.Info("1233", filed)
 	gallop.AddJob("@every 3s", &job.Hello1{Demo: ctr.Demo})
 	//输出： {"level":"INFO","ts":"2020-08-28 14:26:32","func":"controller/hello.go:20","msg":"1233","req_id":"xxxxxxxxxxxxx"}
-	return fmt.Sprint(ctr.Demo, ctr.Demo1, ctr.Cfg.B.C)
+	return fmt.Sprint(ctr.Demo, ctr.Demo1, ctr.Cfg.B.C, c.ClientIP())
 }
 
 func (ctr *HelloController) Json(c *gallop.Context) gallop.Json {

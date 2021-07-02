@@ -4,6 +4,7 @@ import (
 	"github.com/cleango/gallop/infras/errs"
 	"github.com/gin-gonic/gin"
 	"github.com/gogf/gf/util/gvalid"
+	"strings"
 )
 
 type Context struct {
@@ -41,4 +42,16 @@ func (c *Context) ShouldBindHeader(obj interface{}) error {
 		return errs.WithViewErr(err)
 	}
 	return nil
+}
+func (c *Context) ClientIP() string {
+	clientIP := c.GetHeader("X-Forwarded-For")
+	clientIP = strings.TrimSpace(strings.Split(clientIP, ",")[0])
+	if clientIP == "" {
+		clientIP = strings.TrimSpace(c.GetHeader("X-Real-Ip"))
+	}
+	if clientIP != "" {
+		return clientIP
+	}
+
+	return ""
 }
