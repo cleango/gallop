@@ -57,6 +57,14 @@ func Ignite() *Gallop {
 	g.Beans(logger.NewLogFactory())
 	return g
 }
+
+type BeforeFunc func(app *gin.Engine)
+
+func (g *Gallop) Before(funcs ...BeforeFunc) {
+	for _, f := range funcs {
+		f(g.engine)
+	}
+}
 func (g *Gallop) Use(middes ...IMidHandler) *Gallop {
 	for _, mid := range middes {
 		g.engine.Use(MidFactory(mid))
