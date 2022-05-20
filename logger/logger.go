@@ -12,10 +12,11 @@ import (
 
 //LogConfig 日志配置文件
 type LogConfig struct {
-	Type  string `value:"type"`
-	Path  string `value:"path"`
-	Level string `value:"level"`
-	Stack bool `value:"stack"`
+	Type   string `value:"type"`
+	Path   string `value:"path"`
+	Level  string `value:"level"`
+	Stack  bool   `value:"stack"`
+	MaxAge int    `value:"max_age"`
 }
 
 var (
@@ -57,17 +58,17 @@ func initLog(c LogConfig) *zap.Logger {
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 			enc.AppendString(t.Format("2006-01-02 15:04:05"))
 		},
-		StacktraceKey:"stack",
-		CallerKey:    "func",
-		EncodeCaller: zapcore.ShortCallerEncoder,
+		StacktraceKey: "stack",
+		CallerKey:     "func",
+		EncodeCaller:  zapcore.ShortCallerEncoder,
 		EncodeDuration: func(d time.Duration, enc zapcore.PrimitiveArrayEncoder) {
 			enc.AppendInt64(int64(d) / 1000000)
 		},
 	})
-	if c.Stack{
-		return zap.New(getCore(c, encoder), zap.AddCaller(),zap.AddCallerSkip(1), zap.AddStacktrace(zap.WarnLevel))
-	}else{
-		return zap.New(getCore(c, encoder), zap.AddCaller(),zap.AddCallerSkip(1))
+	if c.Stack {
+		return zap.New(getCore(c, encoder), zap.AddCaller(), zap.AddCallerSkip(1), zap.AddStacktrace(zap.WarnLevel))
+	} else {
+		return zap.New(getCore(c, encoder), zap.AddCaller(), zap.AddCallerSkip(1))
 	}
 
 }
@@ -90,12 +91,15 @@ func getCore(c LogConfig, encoder zapcore.Encoder) zapcore.Core {
 	return zapcore.NewTee(cores...)
 }
 func getWriter(c LogConfig, level string) io.Writer {
-
+	maxAge := 20
+	if c.MaxAge > 0 {
+		maxAge = c.MaxAge
+	}
 	return &lumberjack.Logger{
 		Filename:   c.Path + "/" + level + ".log",
 		MaxSize:    100,
 		MaxBackups: 10,
-		MaxAge:     20,
+		MaxAge:     maxAge,
 		Compress:   false,
 	}
 }
