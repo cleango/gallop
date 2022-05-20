@@ -60,10 +60,11 @@ func Ignite() *Gallop {
 
 type BeforeFunc func(app *gin.Engine)
 
-func (g *Gallop) Before(funcs ...BeforeFunc) {
+func (g *Gallop) Before(funcs ...BeforeFunc) *Gallop {
 	for _, f := range funcs {
 		f(g.engine)
 	}
+	return g
 }
 func (g *Gallop) Use(middes ...IMidHandler) *Gallop {
 	for _, mid := range middes {
